@@ -15,8 +15,9 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; -webkit-tap-highlight-color: transparent; }
         .font-serif-luxury { font-family: 'Playfair Display', serif; }
+        .faculty-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; transition: all 0.2s ease; cursor: pointer; }
+        .faculty-card:hover { border-color: #0f172a; transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.06); }
         .matricule-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: #0f172a; color: #ffffff; }
-
         .slot-box {
             position: relative;
             overflow: hidden;
@@ -38,22 +39,13 @@
         .slot-text-overlay { position: relative; z-index: 2; }
         .slot-future { border: 1.5px dashed #cbd5e1 !important; background: #f8fafc !important; cursor: not-allowed !important; opacity: 0.6; }
         .slot-ended { border: 1.5px solid #e2e8f0 !important; background: #f1f5f9 !important; cursor: not-allowed !important; opacity: 0.65; }
-
         .student-card { border: 1.5px solid #e2e8f0; border-radius: 16px; transition: all 0.15s ease; cursor: pointer; user-select: none; }
         .student-card:active { transform: scale(0.96); }
-
-        /* ستايل الطباعة للتقرير */
-        @media print {
-            body * { visibility: hidden; }
-            #printableReportArea, #printableReportArea * { visibility: visible; }
-            #printableReportArea { position: absolute; left: 0; top: 0; width: 100%; }
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
-
     <!-- ============================================================ -->
-    <!-- 1. شاشة تسجيل الدخول                                         -->
+    <!-- 1. شاشة تسجيل الدخول (LOGIN FORM)                            -->
     <!-- ============================================================ -->
     <div id="view-login" class="min-h-screen flex items-center justify-center p-4 bg-slate-950">
         <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6 border border-slate-800">
@@ -62,19 +54,17 @@
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <h2 class="text-xl font-black uppercase tracking-tight text-slate-900">GS Henri Matisse</h2>
-                <p class="text-xs text-slate-500 font-semibold">Témara • Portail Numérique 2026/2027</p>
+                <p class="text-xs text-slate-500 font-semibold">Témara • Portail Numérique Sécurisé 2026/2027</p>
             </div>
-
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-600 mb-1.5">Identifiant / Email</label>
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-4 top-3.5 text-slate-400 text-xs"></i>
-                        <input type="email" id="loginEmail" required placeholder="prof.ahmed@matisse.ma"
+                        <input type="email" id="loginEmail" required placeholder="nom@matisse.ma"
                             class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-900">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-600 mb-1.5">Mot de passe</label>
                     <div class="relative">
@@ -83,15 +73,14 @@
                             class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-slate-900">
                     </div>
                 </div>
-
                 <div id="loginError" class="hidden text-[11px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl text-center border border-red-200"></div>
-
                 <button type="submit" id="loginBtn" class="w-full bg-slate-950 hover:bg-slate-800 text-white font-black text-xs uppercase py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
                     <span>Se connecter</span>
                     <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
-            <p class="text-[10px] text-center text-slate-400">Pour tester: <strong>prof.ahmed@matisse.ma</strong> ou <strong>surveillance@matisse.ma</strong></p>
+            
+            <p class="text-[10px] text-center text-slate-400 font-semibold">Accès réservé au corps enseignant et à la surveillance générale.</p>
         </div>
     </div>
 
@@ -115,19 +104,25 @@
                         <p class="text-xs font-semibold text-slate-400 font-serif-luxury italic">« Excellence • Rigueur • Réussite » — Année : 2026/2027</p>
                     </div>
                 </div>
+                <div class="flex items-center gap-3 flex-wrap justify-end">
+                    
+                    <!-- زر مُوَلِّد جداول الحصص الذكي -->
+                    <button onclick="openGeneratorModal()" class="text-xs font-black uppercase px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fas fa-magic"></i>
+                        <span>Générateur Auto</span>
+                    </button>
 
-                <div class="flex items-center gap-3">
-                    <!-- Nav Switcher for Surveillance -->
+                    <!-- Switch View for Admin/Surveillance -->
                     <div id="adminNavSwitch" class="hidden flex items-center gap-2">
                         <button onclick="toggleSurveillantMode(true)" class="text-xs font-black uppercase px-3 py-2 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 transition">
-                            <i class="fas fa-user-shield mr-1"></i> Surveillance & Direction
+                            <i class="fas fa-user-shield mr-1"></i> Surveillance
                         </button>
                         <button onclick="toggleSurveillantMode(false)" class="text-xs font-black uppercase px-3 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
-                            <i class="fas fa-chalkboard-teacher mr-1"></i> Mode Enseignant
+                            <i class="fas fa-chalkboard-teacher mr-1"></i> Emploi du temps
                         </button>
                     </div>
-
-                    <!-- Horloge -->
+                    
+                    <!-- Horloge Temps Réel -->
                     <div class="flex items-center gap-2.5 bg-slate-900 text-white px-4 py-2 rounded-2xl shadow-sm">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <div class="text-right">
@@ -135,8 +130,7 @@
                             <span id="realLiveClock" class="text-sm font-black font-mono tracking-widest leading-none mt-0.5">--:--:--</span>
                         </div>
                     </div>
-
-                    <button onclick="handleLogout()" class="text-xs font-black uppercase px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:text-red-600 text-slate-600 transition" title="Déconnexion">
+                    <button onclick="handleLogout()" class="text-xs font-black uppercase px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:text-red-600 text-slate-600 transition">
                         <i class="fas fa-power-off"></i>
                     </button>
                 </div>
@@ -144,7 +138,7 @@
         </header>
 
         <!-- ============================================================ -->
-        <!-- A. فضاء الأستاذ: جدول الحصص + ورقة غياب القسم المختار       -->
+        <!-- A. فضاء الأستاذ: جدول الحصص الكامل + ورقة الغياب             -->
         <!-- ============================================================ -->
         <main id="view-teacher-workspace" class="max-w-7xl mx-auto p-4 sm:p-6 w-full space-y-6 flex-1">
             
@@ -162,24 +156,23 @@
                         <p id="profSubjectDisplay" class="text-xs font-bold text-slate-500">Mathématiques • Collège</p>
                     </div>
                 </div>
-
                 <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                     <select id="teacherProfileSelector" onchange="changeTeacherProfile(this.value)" class="text-xs font-black uppercase px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-800 outline-none"></select>
                     
                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-200">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                        Direct Cloud
+                        Cloud Connecté
                     </span>
                 </div>
             </div>
 
-            <!-- TABLEAU DES 8 CLASSES -->
+            <!-- TABLEAU OFFICIEL DES CLASSES -->
             <div class="border border-slate-200 rounded-3xl overflow-hidden shadow-sm bg-white">
                 <div class="overflow-x-auto p-4">
                     <table class="w-full text-center border-collapse text-xs font-black">
                         <thead>
                             <tr class="bg-slate-50 uppercase text-[10px] text-slate-500 border-b">
-                                <th class="p-3 border w-24 text-left">Classe</th>
+                                <th class="p-3 border w-36 text-left">Classe & Salle Fixe</th>
                                 <th class="p-3 border text-slate-900" colspan="2">Séance 1 (08h15 - 10h00) [2h]</th>
                                 <th class="p-3 border bg-slate-100 w-10 text-slate-400">R</th>
                                 <th class="p-3 border text-slate-900" colspan="2">Séance 2 (10h10 - 11h55) [2h]</th>
@@ -208,17 +201,17 @@
                 </div>
             </div>
 
-            <!-- FEUILLE D'APPEL (FILTRÉE PAR LA CLASSE CHOISIE) -->
+            <!-- FEUILLE D'APPEL DIRECTE -->
             <div class="border-2 border-slate-900 rounded-3xl p-6 space-y-5 shadow-lg bg-white">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
                     <div>
                         <div class="flex items-center gap-2.5">
                             <span id="activeClassBadge" class="bg-slate-900 text-white font-black text-xs uppercase px-3 py-1 rounded-lg">1AC / A</span>
-                            <h3 class="text-xl font-black uppercase text-slate-900 italic">Feuille d'Appel du Cours</h3>
+                            <span id="activeRoomBadge" class="bg-indigo-50 text-indigo-900 border border-indigo-200 font-bold text-xs uppercase px-2.5 py-1 rounded-lg">Salle 01</span>
+                            <h3 class="text-xl font-black uppercase text-slate-900 italic">Feuille d'Appel Numérique</h3>
                         </div>
-                        <p class="text-xs font-semibold text-slate-500 mt-1">Séance : <span id="activeSlotBadge" class="font-extrabold text-slate-900">08h15 - 10h00 (2h)</span></p>
+                        <p class="text-xs font-semibold text-slate-500 mt-1">Séance sélectionnée : <span id="activeSlotBadge" class="font-extrabold text-slate-900">08h15 - 10h00 (2h)</span></p>
                     </div>
-
                     <div class="flex items-center gap-3">
                         <div class="bg-emerald-50 border border-emerald-200 px-4 py-1.5 rounded-xl text-center">
                             <span class="text-[9px] font-black uppercase tracking-wider text-emerald-700 block">Présents</span>
@@ -230,50 +223,40 @@
                         </div>
                     </div>
                 </div>
-
                 <p class="text-xs font-bold text-slate-500">
-                    <i class="fas fa-hand-pointer text-slate-900 mr-1.5"></i> Cliquez sur l'élève pour basculer : 
-                    <strong class="text-emerald-700">Présent</strong> ➔ <strong class="text-red-600">Absent</strong>. 
-                    <span class="text-slate-400 italic">(Notification immédiate dans le bureau de la direction).</span>
+                    <i class="fas fa-hand-pointer text-slate-900 mr-1.5"></i> Touchez un élève pour basculer : 
+                    <strong class="text-emerald-700">Présent (Vert)</strong> ➔ <strong class="text-red-600">Absent (Rouge)</strong>.
                 </p>
-
-                <!-- بطاقات التلاميذ التابعين للقسم المختار -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="studentsGrid"></div>
             </div>
-
         </main>
 
         <!-- ============================================================ -->
-        <!-- B. فضاء الحراسة العامة والمدير (RAPPORT + SONNERIE + REALTIME)-->
+        <!-- B. فضاء الحارس العام                                         -->
         <!-- ============================================================ -->
         <main id="view-surveillant-dashboard" class="max-w-7xl mx-auto p-4 sm:p-6 w-full space-y-6 flex-1 hidden">
-            
             <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-1 bg-amber-400 text-slate-950 font-black text-xs uppercase rounded-lg">Direction & Surveillance</span>
-                        <h2 class="text-2xl font-black uppercase tracking-tight">Tableau de Contrôle des Absences</h2>
+                        <span class="px-2.5 py-1 bg-amber-400 text-slate-950 font-black text-xs uppercase rounded-lg">Administration</span>
+                        <h2 class="text-2xl font-black uppercase tracking-tight">Bureau du Surveillant Général</h2>
                     </div>
-                    <p class="text-xs text-slate-400 mt-1">Réception instantanée avec alerte sonore & Impression du rapport officiel.</p>
+                    <p class="text-xs text-slate-400 mt-1">Flux des absences en direct (Supabase Realtime) & Fiches cumulatives des élèves.</p>
                 </div>
-
-                <div class="flex items-center gap-3">
-                    <button onclick="printDailyReport()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs uppercase px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2">
-                        <i class="fas fa-print"></i>
-                        <span>Imprimer Rapport du Jour (Pour Directeur)</span>
-                    </button>
+                <div class="flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3.5 py-2 rounded-xl text-xs font-bold">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    Mise à jour en direct connectée
                 </div>
             </div>
-
-            <!-- إحصائيات سريعة -->
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                     <span class="text-xs font-bold text-slate-400 uppercase">Absences Aujourd'hui</span>
                     <p id="statTodayAbsences" class="text-3xl font-black text-red-600 mt-1">0</p>
                 </div>
                 <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Heures Perdues Aujourd'hui</span>
-                    <p id="statTotalHoursToday" class="text-3xl font-black text-slate-800 mt-1">0h</p>
+                    <span class="text-xs font-bold text-slate-400 uppercase">Élève le plus absent</span>
+                    <p id="statTopAbsent" class="text-sm font-black text-slate-800 mt-2 truncate">Aucun élève</p>
                 </div>
                 <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                     <span class="text-xs font-bold text-slate-400 uppercase">Date Actuelle</span>
@@ -282,72 +265,90 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Flux en direct (مع إمكانية تبرير الغياب) -->
-                <div class="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
-                    <h3 class="font-black text-sm uppercase text-slate-800 flex items-center justify-between border-b pb-3">
-                        <span><i class="fas fa-satellite-dish text-red-500 mr-2"></i>Flux Déclaré en Direct Aujourd'hui</span>
-                        <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">Sonnette Active 🔔</span>
+                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
+                    <h3 class="font-black text-sm uppercase text-slate-800 flex items-center gap-2 border-b pb-3">
+                        <i class="fas fa-satellite-dish text-red-500"></i> Flux des déclarations en direct
                     </h3>
                     <div id="surveillantRealtimeFeed" class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1"></div>
                 </div>
-
-                <!-- ملفات التلاميذ التراكمية -->
-                <div class="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
+                <div class="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
                     <h3 class="font-black text-sm uppercase text-slate-800 flex items-center gap-2 border-b pb-3">
-                        <i class="fas fa-folder-open text-amber-500"></i> Dossier Disciplinaire par Élève
+                        <i class="fas fa-folder-open text-amber-500"></i> Fichier Historique par Élève
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[500px] overflow-y-auto p-1" id="surveillantStudentsCards"></div>
                 </div>
             </div>
         </main>
 
-        <!-- ZONE D'IMPRESSION DU RAPPORT POUR LE DIRECTEUR -->
-        <div id="printableReportArea" class="hidden p-8 bg-white">
-            <div class="border-b-2 border-slate-900 pb-4 mb-6 flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-black uppercase text-slate-900">GROUPE SCOLAIRE HENRI MATISSE TÉMARA</h1>
-                    <p class="text-sm font-bold text-slate-600">Direction Pédagogique • Rapport Journalier d'Absence</p>
+        <!-- ============================================================ -->
+        <!-- MODAL : مُوَلِّد جداول الحصص الذكي وإدارة القاعات القارة      -->
+        <!-- ============================================================ -->
+        <div id="generatorModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl overflow-y-auto p-6 space-y-6">
+                
+                <div class="flex justify-between items-center border-b pb-4">
+                    <div>
+                        <h2 class="text-xl font-black uppercase text-slate-900 flex items-center gap-2">
+                            <i class="fas fa-cogs text-indigo-600"></i> Configuration & Générateur Automatique
+                        </h2>
+                        <p class="text-xs text-slate-500">دخل الأساتذة والمستويات، وحدد القاعة القارة لكل قسم، وسيتم توليد الجدول بدون أي تعارض.</p>
+                    </div>
+                    <button onclick="closeGeneratorModal()" class="text-slate-400 hover:text-slate-700 text-xl font-black">✕</button>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm font-bold">Date : <span id="printReportDate"></span></p>
-                    <p class="text-xs text-slate-500">Document généré automatiquement</p>
-                </div>
-            </div>
 
-            <table class="w-full text-left border-collapse border text-xs">
-                <thead>
-                    <tr class="bg-slate-100 uppercase text-[10px]">
-                        <th class="border p-2">Élève</th>
-                        <th class="border p-2">Classe</th>
-                        <th class="border p-2">Séance / Heure</th>
-                        <th class="border p-2">Matière</th>
-                        <th class="border p-2">Professeur</th>
-                        <th class="border p-2">Statut</th>
-                    </tr>
-                </thead>
-                <tbody id="printReportTableBody"></tbody>
-            </table>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 1. تحديد القاعات القارة للأقسام -->
+                    <div class="border border-slate-200 p-4 rounded-2xl bg-slate-50 space-y-3">
+                        <h3 class="text-xs font-black uppercase text-slate-800 flex items-center gap-1.5">
+                            <i class="fas fa-door-closed text-indigo-600"></i> 1. الأقسام والقاعات القارة (Fixes)
+                        </h3>
+                        <div id="roomsConfigList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                    </div>
 
-            <div class="mt-12 flex justify-between text-xs font-bold text-center">
-                <div>
-                    <p class="mb-12">Le Surveillant Général</p>
-                    <p class="text-slate-400">Signature & Cachet</p>
+                    <!-- 2. إسناد الأساتذة والمواد -->
+                    <div class="border border-slate-200 p-4 rounded-2xl bg-slate-50 space-y-3">
+                        <h3 class="text-xs font-black uppercase text-slate-800 flex items-center gap-1.5">
+                            <i class="fas fa-chalkboard-teacher text-indigo-600"></i> 2. إضافة أستاذ ومادة لحصة
+                        </h3>
+                        <div class="space-y-2">
+                            <input id="inputGenTeacher" type="text" placeholder="اسم الأستاذ (مثلاً: M. Karim)" class="w-full p-2 border rounded-xl text-xs font-bold outline-none">
+                            <input id="inputGenSubject" type="text" placeholder="المادة (مثلاً: Mathématiques)" class="w-full p-2 border rounded-xl text-xs font-bold outline-none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="inputGenClass" class="p-2 border rounded-xl text-xs font-bold bg-white outline-none"></select>
+                                <input id="inputGenSessions" type="number" min="1" max="4" value="1" placeholder="عدد الحصص (2h)" class="p-2 border rounded-xl text-xs font-bold outline-none">
+                            </div>
+                            <button onclick="addTeacherDuty()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 rounded-xl text-xs font-black uppercase">
+                                + إضافة الإسناد
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <p class="mb-12">Le Directeur Pédagogique</p>
-                    <p class="text-slate-400">Signature & Cachet</p>
+
+                <!-- لائحة الإسنادات الحالية -->
+                <div class="border border-slate-200 p-4 rounded-2xl bg-white space-y-2">
+                    <span class="text-xs font-black uppercase text-slate-500 block">الإسنادات المسجلة حالياً:</span>
+                    <div id="dutiesList" class="max-h-36 overflow-y-auto space-y-1.5 text-xs"></div>
                 </div>
+
+                <!-- أزرار الإجراء -->
+                <div class="flex justify-end gap-3 pt-2 border-t">
+                    <button onclick="closeGeneratorModal()" class="px-4 py-2 border rounded-xl text-xs font-bold text-slate-600">إلغاء</button>
+                    <button onclick="runAutoScheduleGeneration()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase shadow-lg flex items-center gap-2">
+                        <i class="fas fa-bolt"></i> توليد الجدول الآن (Générer)
+                    </button>
+                </div>
+
             </div>
         </div>
 
         <!-- FOOTER -->
         <footer class="border-t border-slate-100 py-3 text-center text-xs text-slate-400 font-medium bg-white">
-            Groupe Scolaire Henri Matisse Témara • Emploi du Temps Collège 2026/2027 • Cloud Supabase
+            Groupe Scolaire Henri Matisse Témara • Emploi du Temps Officiel Collège 2026/2027 • Cloud Supabase
         </footer>
     </div>
 
     <!-- ============================================================ -->
-    <!-- LOGIQUE JAVASCRIPT : ALERTE SONORE + IMPRESSION + SUPABASE   -->
+    <!-- LOGIQUE JAVASCRIPT : SUPABASE + GENERATEUR + LIVE SYNC       -->
     <!-- ============================================================ -->
     <script>
         const SUPABASE_URL = "https://bsaqkaljswkvtdthokkq.supabase.co";
@@ -361,38 +362,43 @@
             4: { start: 855, end: 960, duration: 105, label: "14h15 - 16h00", hours: 2 }
         };
 
-        const facultyDatabase = {
-            "MTH-01": { code: "MTH-01", name: "M. Ahmed Mansouri", subject: "Mathématiques 1", dept: "Sciences Exactes", sessions: [ { id: "mth1_1", class: "1AC / A", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" }, { id: "mth1_2", class: "2AC / A", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" }, { id: "mth1_3", class: "1AC / B", block: 3, is2h: true, timeTitle: "12h30 - 14h10 (2h)" } ] },
-            "MTH-02": { code: "MTH-02", name: "M. Rachid Tazi", subject: "Mathématiques 2", dept: "Sciences Exactes", sessions: [ { id: "mth2_1", class: "3AC / B", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" }, { id: "mth2_2", class: "3AC / A", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" }, { id: "mth2_3", class: "1AC / C", block: 4, is2h: true, timeTitle: "14h15 - 16h00 (2h)" } ] },
-            "FR-01":  { code: "FR-01", name: "Mme. Sarah Belkacem", subject: "Français 1", dept: "Lettres", sessions: [ { id: "fr1_1", class: "1AC / A", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" }, { id: "fr1_2", class: "2AC / A", block: 4, is2h: true, timeTitle: "14h15 - 16h00 (2h)" } ] },
-            "PC-01":  { code: "PC-01", name: "M. Youssef Amine", subject: "Physique-Chimie", dept: "Physique", sessions: [ { id: "pc1_1", class: "1AC / B", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" }, { id: "pc1_4", class: "3AC / A", block: 3, is2h: true, timeTitle: "12h30 - 14h10 (2h)" } ] },
-            "ARB-01": { code: "ARB-01", name: "M. Hassan El Fassi", subject: "Langue Arabe 1", dept: "Arabe", sessions: [ { id: "arb1_1", class: "1AC / C", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" }, { id: "arb1_2", class: "2AC / B", block: 4, is2h: true, timeTitle: "14h15 - 16h00 (2h)" } ] }
+        // الأقسام مع القاعة القارة لكل قسم
+        let classRoomsMap = {
+            "1AC / A": "Salle 01",
+            "1AC / B": "Salle 02",
+            "1AC / C": "Salle 03",
+            "2AC / A": "Salle 04",
+            "2AC / B": "Salle 05",
+            "2AC / C": "Salle 06",
+            "3AC / A": "Salle 07",
+            "3AC / B": "Salle 08"
+        };
+
+        // لائحة الإسنادات التي يتم التوليد على أساسها
+        let teachingDuties = [
+            { teacher: "M. Ahmed Mansouri", code: "MTH-01", subject: "Mathématiques", class: "1AC / A", count: 1 },
+            { teacher: "M. Ahmed Mansouri", code: "MTH-01", subject: "Mathématiques", class: "2AC / A", count: 1 },
+            { teacher: "M. Rachid Tazi", code: "MTH-02", subject: "Mathématiques", class: "3AC / B", count: 1 },
+            { teacher: "Mme. Sarah Belkacem", code: "FR-01", subject: "Français", class: "1AC / A", count: 1 },
+            { teacher: "M. Youssef Amine", code: "PC-01", subject: "Physique-Chimie", class: "1AC / B", count: 1 },
+            { teacher: "M. Karim Idrissi", code: "SVT-01", subject: "SVT", class: "2AC / B", count: 1 }
+        ];
+
+        // قاعدة بيانات الأساتذة
+        let facultyDatabase = {
+            "MTH-01": { code: "MTH-01", name: "M. Ahmed Mansouri", subject: "Mathématiques", dept: "Sciences Exactes", sessions: [ { id: "mth1_1", class: "1AC / A", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" }, { id: "mth1_2", class: "2AC / A", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" } ] },
+            "MTH-02": { code: "MTH-02", name: "M. Rachid Tazi", subject: "Mathématiques", dept: "Sciences Exactes", sessions: [ { id: "mth2_1", class: "3AC / B", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" } ] },
+            "FR-01":  { code: "FR-01", name: "Mme. Sarah Belkacem", subject: "Français", dept: "Lettres", sessions: [ { id: "fr1_1", class: "1AC / A", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" } ] },
+            "PC-01":  { code: "PC-01", name: "M. Youssef Amine", subject: "Physique-Chimie", dept: "Physique", sessions: [ { id: "pc1_1", class: "1AC / B", block: 1, is2h: true, timeTitle: "08h15 - 10h00 (2h)" } ] },
+            "SVT-01": { code: "SVT-01", name: "M. Karim Idrissi", subject: "SVT", dept: "Sciences", sessions: [ { id: "svt1_1", class: "2AC / B", block: 2, is2h: true, timeTitle: "10h10 - 11h55 (2h)" } ] }
         };
 
         let currentUser = null;
         let currentRole = 'professeur';
         let activeProfUser = facultyDatabase["MTH-01"];
-        let activeSession = activeProfUser.sessions[0];
-        let allStudentsFromDB = [];
+        let activeSession = activeProfUser ? activeProfUser.sessions[0] : null;
+        let dbStudents = [];
         let currentAbsentees = new Set();
-
-        // صوت التنبيه للحراسة والمدير (Web Audio Synthesizer)
-        function playChimeAlert() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.6);
-            } catch(e) { console.log("Audio non autorisé sans clic préalable"); }
-        }
 
         function updateClock() {
             const now = new Date();
@@ -415,13 +421,10 @@
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
             const btn = document.getElementById('loginBtn');
-
             btn.disabled = true;
             btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Connexion...`;
             errorEl.classList.add('hidden');
-
             const { data, error } = await client.auth.signInWithPassword({ email, password });
-
             if (error) {
                 errorEl.innerText = "Identifiant ou mot de passe incorrect.";
                 errorEl.classList.remove('hidden');
@@ -429,7 +432,6 @@
                 btn.innerHTML = `<span>Se connecter</span> <i class="fas fa-arrow-right"></i>`;
                 return;
             }
-
             currentUser = data.user;
             currentRole = email.toLowerCase().includes('surveillance') ? 'surveillance' : 'professeur';
             initPortal();
@@ -443,17 +445,15 @@
         async function initPortal() {
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('app-workspace').classList.remove('hidden');
-
             if (currentRole === 'surveillance') {
                 document.getElementById('adminNavSwitch').classList.remove('hidden');
                 toggleSurveillantMode(true);
             } else {
                 toggleSurveillantMode(false);
             }
-
             populateTeacherSelect();
             await loadStudentsFromDB();
-            await loadAttendanceForActiveSession();
+            if (activeSession) await loadAttendanceForActiveSession();
             setupRealtime();
         }
 
@@ -482,24 +482,31 @@
 
         function changeTeacherProfile(code) {
             activeProfUser = facultyDatabase[code];
-            activeSession = activeProfUser.sessions[0];
+            if (activeProfUser && activeProfUser.sessions.length > 0) {
+                activeSession = activeProfUser.sessions[0];
+                selectSlot(activeSession.class, activeSession.timeTitle, activeSession.id);
+            }
             document.getElementById('profBadgeDisplay').innerText = activeProfUser.code;
             document.getElementById('profNameDisplay').innerText = activeProfUser.name;
-            document.getElementById('profSubjectDisplay').innerText = `${activeProfUser.subject} • ${activeProfUser.dept}`;
+            document.getElementById('profSubjectDisplay').innerText = `${activeProfUser.subject} • ${activeProfUser.dept || 'Collège'}`;
             renderTimetable();
-            selectSlot(activeSession.class, activeSession.timeTitle, activeSession.id);
         }
 
         function renderTimetable() {
             const tbody = document.getElementById('liveTimetableBody');
             if (!tbody) return;
             tbody.innerHTML = "";
-
-            const classes = ["1AC / A", "1AC / B", "1AC / C", "2AC / A", "2AC / B", "3AC / A", "3AC / B"];
-
+            const classes = Object.keys(classRoomsMap);
+            
             classes.forEach(cls => {
+                const room = classRoomsMap[cls] || 'Salle';
                 const tr = document.createElement('tr');
-                let html = `<td class="p-3 border font-black text-left bg-slate-50 text-slate-900">${cls}</td>`;
+                let html = `
+                    <td class="p-3 border font-black text-left bg-slate-50 text-slate-900">
+                        <div>${cls}</div>
+                        <div class="text-[9px] font-extrabold text-indigo-600 uppercase tracking-wider">${room}</div>
+                    </td>
+                `;
                 html += buildSlotCell(cls, 1);
                 html += `<td class="p-2 border bg-slate-100 text-slate-400 font-bold">R</td>`;
                 html += buildSlotCell(cls, 2);
@@ -513,16 +520,45 @@
         }
 
         function buildSlotCell(cls, blockIndex) {
+            if (!activeProfUser) return `<td colspan="2" class="p-2 border bg-slate-50 text-slate-300 font-bold">—</td>`;
             const sess = activeProfUser.sessions.find(s => s.class === cls && s.block === blockIndex);
             if (!sess) return `<td colspan="2" class="p-2 border bg-slate-50 text-slate-300 font-bold">—</td>`;
+            
+            const bDef = blockDefinitions[blockIndex];
+            const now = new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
+            const isSelected = activeSession && (sess.id === activeSession.id);
 
-            const isSelected = (sess.id === activeSession.id);
+            if (currentMins < bDef.start) {
+                return `
+                    <td colspan="2" class="p-2 slot-future" onclick="selectSlot('${sess.class}', '${sess.timeTitle}', '${sess.id}')">
+                        <span class="text-xs font-black uppercase text-slate-600">${activeProfUser.subject}</span>
+                        <span class="text-[9px] font-bold text-slate-400 block mt-0.5">Ouvre à ${bDef.label.split('-')[0]}</span>
+                    </td>
+                `;
+            }
+            if (currentMins >= bDef.end) {
+                return `
+                    <td colspan="2" class="p-2 slot-ended" onclick="selectSlot('${sess.class}', '${sess.timeTitle}', '${sess.id}')">
+                        <span class="text-xs font-black uppercase text-slate-400">${activeProfUser.subject}</span>
+                        <span class="text-[9px] font-black text-slate-500 block mt-0.5"><i class="fas fa-lock mr-1"></i>Terminée</span>
+                    </td>
+                `;
+            }
+            
+            const elapsed = currentMins - bDef.start;
+            const percent = Math.min(100, Math.max(10, Math.round((elapsed / bDef.duration) * 100)));
+            const textColor = percent >= 50 ? 'text-white' : 'text-slate-900';
             return `
                 <td colspan="2" class="p-1.5" onclick="selectSlot('${sess.class}', '${sess.timeTitle}', '${sess.id}')">
                     <div class="slot-box p-2.5 ${isSelected ? 'ring-2 ring-slate-900 shadow-md' : ''}">
+                        <div class="slot-fill-live" style="width: ${percent}%;"></div>
                         <div class="slot-text-overlay flex flex-col items-center justify-center">
-                            <span class="text-xs font-black uppercase text-slate-900">${activeProfUser.subject} (2h)</span>
-                            <span class="text-[9px] font-bold uppercase mt-0.5 text-slate-500">${sess.class}</span>
+                            <span class="text-xs font-black uppercase ${textColor}">${activeProfUser.subject} (2h)</span>
+                            <span class="text-[9px] font-bold uppercase mt-0.5 ${textColor}">
+                                <span class="w-1.5 h-1.5 rounded-full inline-block mr-1 bg-emerald-400 animate-pulse"></span>
+                                ${percent}% (${elapsed} min)
+                            </span>
                         </div>
                     </div>
                 </td>
@@ -532,6 +568,7 @@
         async function selectSlot(cls, timeTitle, id) {
             activeSession = { id, class: cls, timeTitle };
             document.getElementById('activeClassBadge').innerText = cls;
+            document.getElementById('activeRoomBadge').innerText = classRoomsMap[cls] || 'Salle';
             document.getElementById('activeSlotBadge').innerText = timeTitle;
             renderTimetable();
             await loadAttendanceForActiveSession();
@@ -539,17 +576,17 @@
 
         async function loadStudentsFromDB() {
             const { data } = await client.from('students').select('*').order('id');
-            allStudentsFromDB = data || [];
+            dbStudents = data || [];
         }
 
         async function loadAttendanceForActiveSession() {
+            if (!activeSession) return;
             const today = new Date().toISOString().split('T')[0];
             const { data } = await client
                 .from('attendance')
                 .select('student_id, status')
                 .eq('date', today)
                 .eq('slot_label', activeSession.timeTitle.split(' (')[0]);
-
             currentAbsentees.clear();
             if (data) {
                 data.forEach(item => {
@@ -559,29 +596,17 @@
             renderStudentsGrid();
         }
 
-        // إظهار تلاميذ القسم المختار فقط
         function renderStudentsGrid() {
             const container = document.getElementById('studentsGrid');
             container.innerHTML = "";
-
-            const classStudents = allStudentsFromDB.filter(s => s.class.trim() === activeSession.class.trim());
-
-            if (classStudents.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center text-xs text-slate-400 py-6">Aucun élève enregistré dans cette classe (${activeSession.class}).</p>`;
-                document.getElementById('countAbsents').innerText = 0;
-                document.getElementById('countPresents').innerText = 0;
-                return;
-            }
-
-            classStudents.forEach((st, idx) => {
+            dbStudents.forEach(st => {
                 const isAbsent = currentAbsentees.has(st.id);
                 const card = document.createElement('div');
                 card.className = `student-card p-3 flex items-center justify-between ${!isAbsent ? 'bg-white' : 'bg-red-50 border-red-300'}`;
                 card.onclick = () => toggleStudent(st.id, !isAbsent);
-
                 card.innerHTML = `
                     <div class="flex items-center gap-2 overflow-hidden">
-                        <span class="text-xs font-black ${!isAbsent ? 'text-slate-400' : 'text-red-500'}">${String(idx + 1).padStart(2, '0')}</span>
+                        <span class="text-xs font-black ${!isAbsent ? 'text-slate-400' : 'text-red-500'}">${String(st.id).padStart(2, '0')}</span>
                         <span class="text-xs font-black uppercase truncate ${!isAbsent ? 'text-slate-800' : 'text-red-900'}">${st.name}</span>
                     </div>
                     <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-lg ${!isAbsent ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-600 text-white'}">
@@ -590,22 +615,19 @@
                 `;
                 container.appendChild(card);
             });
-
-            const total = classStudents.length;
-            const abs = classStudents.filter(s => currentAbsentees.has(s.id)).length;
+            const total = dbStudents.length;
+            const abs = currentAbsentees.size;
             document.getElementById('countAbsents').innerText = abs;
             document.getElementById('countPresents').innerText = (total - abs);
         }
 
         async function toggleStudent(studentId, markAbsent) {
+            if (!activeSession) return;
             const today = new Date().toISOString().split('T')[0];
             const slotClean = activeSession.timeTitle.split(' (')[0];
-
             if (markAbsent) currentAbsentees.add(studentId);
             else currentAbsentees.delete(studentId);
-
             renderStudentsGrid();
-
             await client.from('attendance').upsert({
                 student_id: studentId,
                 date: today,
@@ -617,22 +639,18 @@
             }, { onConflict: 'student_id,date,slot_label' });
         }
 
-        // لوحة تحكم الحراسة العامة مع تبرير الغياب
         async function loadSurveillantDashboard() {
             const today = new Date().toISOString().split('T')[0];
             const { data } = await client
                 .from('attendance')
-                .select(`id, date, slot_label, class, teacher_code, status, justified, created_at, students ( name )`)
+                .select(`id, date, slot_label, class, teacher_code, status, created_at, students ( name )`)
                 .eq('date', today)
                 .eq('status', 'absent')
                 .order('created_at', { ascending: false });
-
             const feed = document.getElementById('surveillantRealtimeFeed');
             feed.innerHTML = "";
             const absList = data || [];
             document.getElementById('statTodayAbsences').innerText = absList.length;
-            document.getElementById('statTotalHoursToday').innerText = (absList.length * 2) + "h";
-
             if (absList.length === 0) {
                 feed.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Aucune absence enregistrée aujourd'hui.</p>`;
             } else {
@@ -641,25 +659,15 @@
                     row.className = "border border-slate-200 bg-slate-50 p-2.5 rounded-xl flex justify-between items-center text-xs";
                     row.innerHTML = `
                         <div>
-                            <div class="flex items-center gap-2">
-                                <strong class="uppercase text-slate-900">${r.students ? r.students.name : 'Élève'}</strong>
-                                <span class="text-[10px] text-slate-500 font-bold">(${r.class})</span>
-                            </div>
-                            <span class="text-[10px] text-slate-500 block">${r.teacher_code} • ${r.slot_label}</span>
+                            <strong class="uppercase text-slate-900">${r.students ? r.students.name : 'Élève'}</strong>
+                            <span class="text-[10px] text-slate-500 block">${r.class} • ${r.teacher_code} (${r.slot_label})</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleJustify('${r.id}', ${!r.justified})" class="text-[10px] font-bold px-2 py-1 rounded-lg border ${r.justified ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500'}">
-                                ${r.justified ? '<i class="fas fa-check-circle mr-1"></i>Justifié' : 'Non justifié'}
-                            </button>
-                            <span class="text-[10px] font-black uppercase text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">Absent</span>
-                        </div>
+                        <span class="text-[10px] font-black uppercase text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">Absent</span>
                     `;
                     feed.appendChild(row);
                 });
             }
-
-            // فحص السجل التراكمي
-            const { data: allAbs } = await client.from('attendance').select('student_id, students(name, class)').eq('status', 'absent');
+            const { data: allAbs } = await client.from('attendance').select('student_id, students(name)').eq('status', 'absent');
             const counts = {};
             if (allAbs) {
                 allAbs.forEach(a => {
@@ -667,19 +675,18 @@
                     counts[name] = (counts[name] || 0) + 1;
                 });
             }
-
             const cardsContainer = document.getElementById('surveillantStudentsCards');
             cardsContainer.innerHTML = "";
-            allStudentsFromDB.forEach(st => {
+            dbStudents.forEach(st => {
                 const c = counts[st.name] || 0;
                 const card = document.createElement('div');
                 card.className = "border border-slate-200 p-2.5 rounded-xl flex items-center justify-between text-xs bg-white";
                 card.innerHTML = `
                     <div>
                         <strong class="uppercase text-slate-800 block">${st.name}</strong>
-                        <span class="text-[10px] text-slate-400">${st.class} • ${c} abs (${c * 2}h)</span>
+                        <span class="text-[10px] text-slate-400">${c} séances manquées (${c * 2}h)</span>
                     </div>
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded ${c >= 3 ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-slate-100 text-slate-600'}">
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded ${c >= 3 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'}">
                         ${c === 0 ? 'Assidu' : c + ' abs'}
                     </span>
                 `;
@@ -687,53 +694,150 @@
             });
         }
 
-        async function toggleJustify(recordId, newStatus) {
-            await client.from('attendance').update({ justified: newStatus }).eq('id', recordId);
-            loadSurveillantDashboard();
-        }
-
-        // طباعة تقرير المدير
-        async function printDailyReport() {
-            const today = new Date().toISOString().split('T')[0];
-            const { data } = await client
-                .from('attendance')
-                .select(`slot_label, class, teacher_code, status, justified, students ( name )`)
-                .eq('date', today)
-                .eq('status', 'absent');
-
-            document.getElementById('printReportDate').innerText = new Date().toLocaleDateString('fr-FR');
-            const tbody = document.getElementById('printReportTableBody');
-            tbody.innerHTML = "";
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center">Aucune absence enregistrée pour cette journée.</td></tr>`;
-            } else {
-                data.forEach(r => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="border p-2 font-bold uppercase">${r.students ? r.students.name : '—'}</td>
-                        <td class="border p-2">${r.class}</td>
-                        <td class="border p-2">${r.slot_label}</td>
-                        <td class="border p-2">Cours</td>
-                        <td class="border p-2">${r.teacher_code}</td>
-                        <td class="border p-2 font-bold ${r.justified ? 'text-emerald-600' : 'text-red-600'}">${r.justified ? 'Justifié' : 'Non justifié'}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            window.print();
-        }
-
         function setupRealtime() {
             client
                 .channel('global_attendance')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance' }, () => {
-                    playChimeAlert(); // إطلاق صوت التنبيه فالحين
                     if (currentRole === 'surveillance') loadSurveillantDashboard();
                     else loadAttendanceForActiveSession();
                 })
                 .subscribe();
+        }
+
+        // ============================================================
+        // خوارزمية التوليد الذكي بدون أي تعارض (ALGORITHME DU GENERATEUR)
+        // ============================================================
+        function openGeneratorModal() {
+            document.getElementById('generatorModal').classList.remove('hidden');
+            renderRoomsConfig();
+            renderDutiesUI();
+            
+            const sel = document.getElementById('inputGenClass');
+            sel.innerHTML = '';
+            Object.keys(classRoomsMap).forEach(cls => {
+                sel.innerHTML += `<option value="${cls}">${cls} (${classRoomsMap[cls]})</option>`;
+            });
+        }
+
+        function closeGeneratorModal() {
+            document.getElementById('generatorModal').classList.add('hidden');
+        }
+
+        function renderRoomsConfig() {
+            const list = document.getElementById('roomsConfigList');
+            list.innerHTML = '';
+            Object.keys(classRoomsMap).forEach(cls => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-white p-2 border rounded-xl">
+                        <span class="text-xs font-bold text-slate-800">${cls}</span>
+                        <input type="text" value="${classRoomsMap[cls]}" onchange="updateClassRoom('${cls}', this.value)" class="p-1 border rounded text-xs font-bold text-indigo-700 w-24 text-center">
+                    </div>
+                `;
+            });
+        }
+
+        function updateClassRoom(cls, val) {
+            classRoomsMap[cls] = val.trim() || 'Salle';
+            renderTimetable();
+        }
+
+        function renderDutiesUI() {
+            const list = document.getElementById('dutiesList');
+            list.innerHTML = '';
+            teachingDuties.forEach((d, idx) => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-50 p-2 border rounded-xl">
+                        <span><strong>${d.teacher}</strong> (${d.subject}) ➔ <strong class="text-indigo-600">${d.class}</strong> [${d.count} حصص]</span>
+                        <button onclick="removeDuty(${idx})" class="text-red-500 font-bold hover:text-red-700">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addTeacherDuty() {
+            const teacher = document.getElementById('inputGenTeacher').value.trim();
+            const subject = document.getElementById('inputGenSubject').value.trim();
+            const cls = document.getElementById('inputGenClass').value;
+            const count = parseInt(document.getElementById('inputGenSessions').value) || 1;
+
+            if (!teacher || !subject) return alert("عافاك دخل سمية الأستاذ والمادة!");
+
+            const code = "PROF-" + (teachingDuties.length + 1).toString().padStart(2, '0');
+            teachingDuties.push({ teacher, code, subject, class: cls, count });
+
+            document.getElementById('inputGenTeacher').value = '';
+            document.getElementById('inputGenSubject').value = '';
+            renderDutiesUI();
+        }
+
+        function removeDuty(idx) {
+            teachingDuties.splice(idx, 1);
+            renderDutiesUI();
+        }
+
+        // التوزيع الذكي للحصص بدون أي تعارض في التوقيت
+        function runAutoScheduleGeneration() {
+            if (teachingDuties.length === 0) return alert("عافاك دخل بعض الأساتذة أولاً!");
+
+            let newFacultyDB = {};
+            let classGrid = {}; // [class][block] = true/false
+            let teacherGrid = {}; // [teacherCode][block] = true/false
+
+            Object.keys(classRoomsMap).forEach(cls => {
+                classGrid[cls] = { 1: false, 2: false, 3: false, 4: false };
+            });
+
+            // تفكيك الحصص
+            let tasks = [];
+            teachingDuties.forEach(d => {
+                if (!newFacultyDB[d.code]) {
+                    newFacultyDB[d.code] = {
+                        code: d.code,
+                        name: d.teacher,
+                        subject: d.subject,
+                        dept: "Enseignement",
+                        sessions: []
+                    };
+                    teacherGrid[d.code] = { 1: false, 2: false, 3: false, 4: false };
+                }
+                for (let i = 0; i < d.count; i++) {
+                    tasks.push({ code: d.code, class: d.class, subject: d.subject });
+                }
+            });
+
+            // خلط الحصص لتوزيع متوازن
+            tasks.sort(() => Math.random() - 0.5);
+
+            // ملء الحصص بدون تضارب
+            tasks.forEach((t, i) => {
+                const availableBlocks = [1, 2, 3, 4].filter(b => !classGrid[t.class][b] && !teacherGrid[t.code][b]);
+                if (availableBlocks.length > 0) {
+                    const block = availableBlocks[Math.floor(Math.random() * availableBlocks.length)];
+                    classGrid[t.class][block] = true;
+                    teacherGrid[t.code][block] = true;
+
+                    const bDef = blockDefinitions[block];
+                    newFacultyDB[t.code].sessions.push({
+                        id: `sess_${i}_${block}`,
+                        class: t.class,
+                        block: block,
+                        is2h: true,
+                        timeTitle: `${bDef.label} (2h)`
+                    });
+                }
+            });
+
+            facultyDatabase = newFacultyDB;
+            const firstCode = Object.keys(facultyDatabase)[0];
+            activeProfUser = facultyDatabase[firstCode];
+            activeSession = activeProfUser.sessions[0] || null;
+
+            populateTeacherSelect();
+            if (activeProfUser) changeTeacherProfile(firstCode);
+            renderTimetable();
+            closeGeneratorModal();
+
+            alert("✅ تم توليد جداول الحصص بنجاح بدون أي تعارض بين الأساتذة مع تثبيت قاعة كل قسم!");
         }
     </script>
 </body>
